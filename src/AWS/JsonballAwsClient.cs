@@ -2,6 +2,7 @@ using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,6 +30,7 @@ namespace TFaller.Jsonball.Client.AWS
             request.QueueUrl = PostDocumentQueueUrl;
             request.MessageBody = JsonSerializer.Serialize(doc);
             request.MessageGroupId = CreateDocName(doc.Type, doc.Name);
+            request.MessageDeduplicationId = Guid.NewGuid().ToString();
             await _sqs.SendMessageAsync(request, ct);
         }
 
@@ -47,6 +49,7 @@ namespace TFaller.Jsonball.Client.AWS
             var request = new SendMessageRequest();
             request.QueueUrl = ListenOnChangeQueueUrl;
             request.MessageBody = JsonSerializer.Serialize(listen);
+            request.MessageDeduplicationId = Guid.NewGuid().ToString();
             await _sqs.SendMessageAsync(request, ct);
         }
     }
