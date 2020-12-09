@@ -5,7 +5,7 @@ using TFaller.Jsonball.Client.Events;
 namespace TFaller.Jsonball.Client
 {
 
-    public abstract class Client
+    public abstract class JsonballClient
     {
         protected string CreateDocName(string type, string name)
         {

@@ -9,7 +9,7 @@ using TFaller.Jsonball.Client.Events;
 
 namespace TFaller.Jsonball.Client.AWS
 {
-    public class Client : Jsonball.Client.Client
+    public class JsonballAwsClient : JsonballClient
     {
         private AmazonLambdaClient _lambda;
         private AmazonSQSClient _sqs;
@@ -17,7 +17,7 @@ namespace TFaller.Jsonball.Client.AWS
         public string ListenOnChangeQueueUrl { get; set; }
         public string GetDocumentFunction { get; set; }
 
-        public Client(AmazonLambdaClient lambda, AmazonSQSClient sqs)
+        public JsonballAwsClient(AmazonLambdaClient lambda, AmazonSQSClient sqs)
         {
             _lambda = lambda;
             _sqs = sqs;
