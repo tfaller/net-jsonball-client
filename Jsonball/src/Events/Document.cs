@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace TFaller.Jsonball.Client.Events
 {
+    [JsonConverter(typeof(DocumentTypeRegistry.DocumentConverter))]
     public class Document
     {
 

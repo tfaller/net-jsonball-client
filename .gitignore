@@ -1,2 +1,4 @@
-/bin
-/obj
+/Jsonball/bin
+/Jsonball/obj
+/Jsonball.Tests/bin
+/Jsonball.Tests/obj
