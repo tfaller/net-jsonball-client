@@ -5,7 +5,7 @@
     <AssemblyName>TFaller.Jsonball.Client</AssemblyName>
     <RootNamespace>TFaller.Jsonball.Client</RootNamespace>
     <PackageId>TFaller.Jsonball.Client</PackageId>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <Authors>Thomas Faller</Authors>
   </PropertyGroup>
 
