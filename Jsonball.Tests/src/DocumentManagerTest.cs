@@ -33,6 +33,44 @@ namespace TFaller.Jsonball.Tests.Client
 
             Assert.Equal<SimpleDocument>((SimpleDocument)returnDoc.Body, doc);
         }
+
+        [Fact]
+        public async void TestTracing()
+        {
+            var getDoc = new GetDocument()
+            {
+                Type = "person",
+                Name = "firstname",
+            };
+
+            var jbClient = new Mock<JsonballClient>();
+            jbClient.Setup(c => c.GetDocumentAsync(getDoc, It.IsAny<CancellationToken>())).ReturnsAsync(
+                new Document()
+                {
+                    Type = "person",
+                    Name = "firstname",
+                    Version = 5,
+                    Body = new Tracing.Person()
+                    {
+                        Name = "firstname"
+                    }
+                });
+
+            var dm = new DocumentManager(jbClient.Object, true);
+            var preson = await dm.GetDocumentAsync<Tracing.IPerson>("person", "firstname");
+
+            // with the following assert wie use the property "name"
+            // it should be traced ...
+            Assert.Equal("firstname", preson.Name);
+
+            var listener = dm.BuildListenOnChange();
+
+            Assert.Equal(1, listener.Length);
+            Assert.Equal("person", listener[0].Type);
+            Assert.Equal("firstname", listener[0].Name);
+            Assert.Equal<uint>(5, listener[0].Version);
+            Assert.Equal(new string[] { "/name" }, listener[0].Properties);
+        }
     }
 
     [DocumentType("test-doc-type")]

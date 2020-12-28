@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using TFaller.Jsonball.Client.Events;
+using TFaller.Jsonball.Client.Tracing;
 
 namespace TFaller.Jsonball.Client
 {
@@ -26,9 +27,20 @@ namespace TFaller.Jsonball.Client
         /// </summary>
         private readonly Dictionary<Type, string> _type2docType = new Dictionary<Type, string>();
 
-        public DocumentManager(JsonballClient client)
+        /// <summary>
+        /// Flag whether documents should be traced.
+        /// </summary>
+        private readonly bool _tracing;
+
+        /// <summary>
+        /// Holds tracing information
+        /// </summary>
+        private readonly Dictionary<Document, TracingInfo> _tracingInfo = new Dictionary<Document, TracingInfo>();
+
+        public DocumentManager(JsonballClient client, bool tracing = false)
         {
             _client = client;
+            _tracing = tracing;
         }
 
         /// <summary>
@@ -37,15 +49,51 @@ namespace TFaller.Jsonball.Client
         /// </summary>
         /// <param name="client">Client to load documents</param>
         /// <param name="change">Change Event to preload the manager</param>
-        public DocumentManager(JsonballClient client, Change change)
+        public DocumentManager(JsonballClient client, Change change, bool tracing = false)
         {
             _client = client;
+            _tracing = tracing;
 
             // parse change
             foreach (var doc in change.Documents)
             {
                 addDocument(doc);
             }
+        }
+
+        /// <summary>
+        /// If tracing is enable it is possible to generate a
+        /// listener filter of used values for each document.
+        /// Note: Only documents that got used are in th result.
+        /// </summary>
+        /// <returns>The documents with used property</returns>
+        public ListenOnChangeDocument[] BuildListenOnChange()
+        {
+            if (!_tracing)
+            {
+                throw new Exception("Tracing was not enabled");
+            }
+
+            var listenDocs = new List<ListenOnChangeDocument>();
+            foreach (var doc in _tracingInfo)
+            {
+                var tracing = doc.Value;
+                if (tracing.Tracer.Count == 0)
+                {
+                    // was not used
+                    continue;
+                }
+
+                var jbDoc = doc.Key;
+                listenDocs.Add(new ListenOnChangeDocument()
+                {
+                    Type = jbDoc.Type,
+                    Name = jbDoc.Name,
+                    Version = jbDoc.Version,
+                    Properties = tracing.Tracer.ToPointer(),
+                });
+            }
+            return listenDocs.ToArray();
         }
 
         /// <summary>
@@ -64,7 +112,7 @@ namespace TFaller.Jsonball.Client
                 {
                     foreach (var doc in docs)
                     {
-                        dic.Add(doc.Key, (T)doc.Value.Body);
+                        dic.Add(doc.Key, getDocumentBody<T>(doc.Value));
                     }
                 }
             }
@@ -113,7 +161,7 @@ namespace TFaller.Jsonball.Client
             if (doc != null)
             {
                 // we have the document already loaded
-                return new ValueTask<T>(((T)doc.Body));
+                return new ValueTask<T>(getDocumentBody<T>(doc));
             }
 
             // we don't have the document cached ... we have to get it first
@@ -134,7 +182,7 @@ namespace TFaller.Jsonball.Client
             }
 
             addDocument(doc);
-            return (T)doc.Body;
+            return getDocumentBody<T>(doc);
         }
 
         private void addDocument(Document doc)
@@ -165,6 +213,41 @@ namespace TFaller.Jsonball.Client
                 sameTypeDocs.TryGetValue(name, out doc);
                 return doc;
             }
+        }
+
+        private T getDocumentBody<T>(Document doc)
+        {
+            if (!_tracing)
+            {
+                return (T)doc.Body;
+            }
+
+            // we have to use a proxy to trace it
+
+            TracingInfo tracingInfo;
+            if (_tracingInfo.TryGetValue(doc, out tracingInfo))
+            {
+                // reuse proxy
+                return (T)tracingInfo.Proxy;
+            }
+
+            // create new proxy
+            var t = new Tracer();
+            var proxy = ProxyFactory.CreateProxy(typeof(T), doc.Body, t);
+
+            _tracingInfo.Add(doc, new TracingInfo()
+            {
+                Proxy = proxy,
+                Tracer = t,
+            });
+
+            return (T)proxy;
+        }
+
+        private struct TracingInfo
+        {
+            public Tracer Tracer;
+            public object Proxy;
         }
     }
 }
