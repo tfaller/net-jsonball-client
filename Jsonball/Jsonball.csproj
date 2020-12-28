@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0</TargetFrameworks>
     <AssemblyName>TFaller.Jsonball.Client</AssemblyName>
     <RootNamespace>TFaller.Jsonball.Client</RootNamespace>
     <PackageId>TFaller.Jsonball.Client</PackageId>
@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.Lambda" Version="3.5.5" />
     <PackageReference Include="AWSSDK.SQS" Version="3.5.0.46" />
+    <PackageReference Include="System.Reflection.DispatchProxy" Version="4.7.1" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>
 
