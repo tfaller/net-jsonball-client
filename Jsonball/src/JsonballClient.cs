@@ -12,7 +12,7 @@ namespace TFaller.Jsonball.Client
             return string.Format("{0}:{1}:{2}", type.Length, type, name);
         }
 
-        public abstract Task PostDocumentAsync(PostDocument doc, CancellationToken ct = default);
+        public abstract Task PostDocumentAsync<T>(PostDocument<T> doc, CancellationToken ct = default);
 
         public abstract Task<Document> GetDocumentAsync(GetDocument doc, CancellationToken ct = default);
 

@@ -24,7 +24,7 @@ namespace TFaller.Jsonball.Client.AWS
             _sqs = sqs;
         }
 
-        public override async Task PostDocumentAsync(PostDocument doc, CancellationToken ct = default)
+        public override async Task PostDocumentAsync<T>(PostDocument<T> doc, CancellationToken ct = default)
         {
             var request = new SendMessageRequest();
             request.QueueUrl = PostDocumentQueueUrl;

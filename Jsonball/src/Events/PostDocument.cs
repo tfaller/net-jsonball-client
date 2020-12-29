@@ -2,7 +2,12 @@
 
 namespace TFaller.Jsonball.Client.Events
 {
-    public class PostDocument
+    /// <summary>
+    /// PostDocument is used to post a new or updated document to
+    /// the jsonball service.
+    /// </summary>
+    /// <typeparam name="TDoc">The type of the document</typeparam>
+    public sealed class PostDocument<TDoc>
     {
         [JsonPropertyName("type")]
         public string Type { get; set; }
@@ -11,6 +16,6 @@ namespace TFaller.Jsonball.Client.Events
         public string Name { get; set; }
 
         [JsonPropertyName("doc")]
-        public object Document { get; set; }
+        public TDoc Document { get; set; }
     }
 }
