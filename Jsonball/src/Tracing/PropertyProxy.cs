@@ -32,7 +32,7 @@ namespace TFaller.Jsonball.Client.Tracing
 
         private string getPropertyName(string propName)
         {
-            var prop = _target.GetType().GetProperty(propName);
+            var prop = typeof(T).GetProperty(propName);
             var nameAttr = prop.GetCustomAttribute<JsonPropertyNameAttribute>();
             if (nameAttr != null)
             {

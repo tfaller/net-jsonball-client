@@ -65,7 +65,7 @@ namespace TFaller.Jsonball.Tests.Client
 
             var listener = dm.BuildListenOnChange();
 
-            Assert.Equal(1, listener.Length);
+            Assert.Single(listener);
             Assert.Equal("person", listener[0].Type);
             Assert.Equal("firstname", listener[0].Name);
             Assert.Equal<uint>(5, listener[0].Version);

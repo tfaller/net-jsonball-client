@@ -88,7 +88,6 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
 
     internal class Person : IPerson
     {
-        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         public IPerson Parent { get; set; }
@@ -98,6 +97,7 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
 
     internal interface IPerson : ITraceable
     {
+        [JsonPropertyName("name")]
         string Name { get; }
 
         IPerson Parent { get; }
