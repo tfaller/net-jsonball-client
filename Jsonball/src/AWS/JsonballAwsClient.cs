@@ -49,7 +49,6 @@ namespace TFaller.Jsonball.Client.AWS
             var request = new SendMessageRequest();
             request.QueueUrl = ListenOnChangeQueueUrl;
             request.MessageBody = JsonSerializer.Serialize(listen);
-            request.MessageDeduplicationId = Guid.NewGuid().ToString();
             await _sqs.SendMessageAsync(request, ct);
         }
     }
