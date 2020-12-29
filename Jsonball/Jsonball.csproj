@@ -7,6 +7,7 @@
     <PackageId>TFaller.Jsonball.Client</PackageId>
     <Version>0.0.3</Version>
     <Authors>Thomas Faller</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
