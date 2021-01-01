@@ -16,6 +16,7 @@ namespace TFaller.Jsonball.Client.AWS
         private AmazonSQSClient _sqs;
         public string PostDocumentQueueUrl { get; set; }
         public string ListenOnChangeQueueUrl { get; set; }
+        public string ListenOnChangeFunction { get; set; }
         public string GetDocumentFunction { get; set; }
 
         public JsonballAwsClient(AmazonLambdaClient lambda, AmazonSQSClient sqs)
@@ -44,12 +45,29 @@ namespace TFaller.Jsonball.Client.AWS
             return await JsonSerializer.DeserializeAsync<Document>(response.Payload, cancellationToken: ct);
         }
 
-        public override async Task ListenOnChange(ListenOnChange listen, CancellationToken ct = default)
+        public override Task ListenOnChange(ListenOnChange listen, CancellationToken ct = default)
+        {
+            if (!string.IsNullOrEmpty(ListenOnChangeFunction))
+            {
+                return listenOnChangeLambda(listen, ct);
+            }
+            return listenOnChangeSQS(listen, ct);
+        }
+        public async Task listenOnChangeSQS(ListenOnChange listen, CancellationToken ct)
         {
             var request = new SendMessageRequest();
             request.QueueUrl = ListenOnChangeQueueUrl;
             request.MessageBody = JsonSerializer.Serialize(listen);
             await _sqs.SendMessageAsync(request, ct);
+        }
+
+        public async Task listenOnChangeLambda(ListenOnChange listen, CancellationToken ct)
+        {
+            var request = new InvokeRequest();
+            request.InvocationType = InvocationType.Event;
+            request.FunctionName = ListenOnChangeFunction;
+            request.Payload = JsonSerializer.Serialize(listen);
+            await _lambda.InvokeAsync(request, ct);
         }
     }
 }
