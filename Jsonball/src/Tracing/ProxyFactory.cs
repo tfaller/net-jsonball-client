@@ -34,7 +34,7 @@ namespace TFaller.Jsonball.Client.Tracing
                 // We can't create a proxy for this type.
                 // We could just return the plain object ... but it is possible that we would
                 // unintentionally not trace a object type we should trace.
-                throw new Exception(String.Format("Type {0} does not impelement ITraceable", type.Name));
+                throw new Exception(String.Format("Type {0} does not implement ITraceable", type.Name));
             }
 
             if (!type.IsInterface)
