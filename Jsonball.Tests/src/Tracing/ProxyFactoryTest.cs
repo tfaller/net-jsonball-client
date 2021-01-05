@@ -84,6 +84,23 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
                 }
             }, t);
         }
+
+        [Fact]
+        public void TestListenEnum()
+        {
+            var t = new Tracer();
+
+            var p = PropertyProxy<IPerson>.Create(new Person()
+            {
+                Gender = Gender.Female
+            }, t);
+
+            Assert.Equal<Gender>(Gender.Female, p.Gender);
+            Assert.Equal(new Tracer()
+            {
+                {"Gender", new Tracer()}
+            }, t);
+        }
     }
 
     internal class Person : IPerson
@@ -93,6 +110,8 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
         public IPerson Parent { get; set; }
 
         public IReadOnlyList<IPerson> Parents { get; set; }
+
+        public Gender Gender { get; set; }
     }
 
     internal interface IPerson : ITraceable
@@ -103,5 +122,13 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
         IPerson Parent { get; }
 
         IReadOnlyList<IPerson> Parents { get; }
+
+        Gender Gender { get; }
+    }
+
+    internal enum Gender
+    {
+        Male,
+        Female
     }
 }

@@ -17,7 +17,7 @@ namespace TFaller.Jsonball.Client.Tracing
         internal static object CreateProxy(Type type, object target, Tracer tracer)
         {
             // some types don't need a proxy, just return the plain value
-            if (target == null || type.IsPrimitive || type == typeof(string))
+            if (target == null || type.IsPrimitive || type == typeof(string) || type.IsEnum)
             {
                 return target;
             }
