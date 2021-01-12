@@ -101,6 +101,34 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
                 {"Gender", new Tracer()}
             }, t);
         }
+
+        [Fact]
+        public void TestNullable()
+        {
+            var t = new Tracer();
+            var person = new Person();
+
+            var p = PropertyProxy<IPerson>.Create(person, t);
+
+            // null nullable
+            Assert.Null(p.BirthYear);
+            Assert.Equal(new Tracer()
+            {
+                {"BirthYear", new Tracer()},
+            }, t);
+
+            // non null nullable
+            t.Clear();
+            Assert.Empty(t);
+
+            person.BirthYear = 1970;
+
+            Assert.Equal(1970, p.BirthYear);
+            Assert.Equal(new Tracer()
+            {
+                {"BirthYear", new Tracer()},
+            }, t);
+        }
     }
 
     internal class Person : IPerson
@@ -112,6 +140,8 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
         public IReadOnlyList<IPerson> Parents { get; set; }
 
         public Gender Gender { get; set; }
+
+        public int? BirthYear { get; set; }
     }
 
     internal interface IPerson : ITraceable
@@ -124,6 +154,8 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
         IReadOnlyList<IPerson> Parents { get; }
 
         Gender Gender { get; }
+
+        int? BirthYear { get; }
     }
 
     internal enum Gender

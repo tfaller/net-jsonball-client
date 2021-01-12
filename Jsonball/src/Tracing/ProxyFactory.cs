@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace TFaller.Jsonball.Client.Tracing
 {
@@ -22,11 +21,21 @@ namespace TFaller.Jsonball.Client.Tracing
                 return target;
             }
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
+            if (type.IsGenericType)
             {
-                // it's a readonly list ... create a proxy.
-                return Activator.CreateInstance(typeof(ReadOnlyListProxy<>)
-                    .MakeGenericType(type.GetGenericArguments()[0]), new object[] { target, tracer });
+                var typeDef = type.GetGenericTypeDefinition();
+                if (typeDef == typeof(IReadOnlyList<>))
+                {
+                    // it's a readonly list ... create a proxy.
+                    return Activator.CreateInstance(typeof(ReadOnlyListProxy<>)
+                        .MakeGenericType(type.GenericTypeArguments[0]), new object[] { target, tracer });
+                }
+                else if (typeDef == typeof(Nullable<>))
+                {
+                    // it's nullable ... which is not null. unpack value and proxy it.
+                    return CreateProxy(type.GenericTypeArguments[0], type.GetMethod("get_Value")
+                        .Invoke(target, null), tracer);
+                }
             }
 
             if (!(typeof(ITraceable)).IsAssignableFrom(type))

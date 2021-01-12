@@ -22,7 +22,7 @@ namespace TFaller.Jsonball.Tests.Client.Events
             };
 
             var doc = JsonSerializer.Serialize(postDoc);
-            Assert.Equal("{\"type\":\"person\",\"name\":\"someone\",\"doc\":{\"name\":\"firstname\",\"Parent\":null,\"Parents\":null,\"Gender\":0}}", doc);
+            Assert.Equal("{\"type\":\"person\",\"name\":\"someone\",\"doc\":{\"name\":\"firstname\",\"Parent\":null,\"Parents\":null,\"Gender\":0,\"BirthYear\":null}}", doc);
         }
     }
 }
