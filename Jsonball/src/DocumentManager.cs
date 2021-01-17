@@ -78,7 +78,7 @@ namespace TFaller.Jsonball.Client
             foreach (var doc in _tracingInfo)
             {
                 var tracing = doc.Value;
-                if (tracing.Tracer.Count == 0)
+                if (tracing.Tracer.Count == 0 && doc.Key.Body != null)
                 {
                     // was not used
                     continue;
@@ -90,6 +90,7 @@ namespace TFaller.Jsonball.Client
                     Type = jbDoc.Type,
                     Name = jbDoc.Name,
                     Version = jbDoc.Version,
+                    NewDocument = doc.Key.Body == null,
                     Properties = tracing.Tracer.ToPointer(),
                 });
             }

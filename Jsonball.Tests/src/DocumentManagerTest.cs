@@ -71,6 +71,40 @@ namespace TFaller.Jsonball.Tests.Client
             Assert.Equal<uint>(5, listener[0].Version);
             Assert.Equal(new string[] { "/name" }, listener[0].Properties);
         }
+
+        [Fact]
+        public async void TestNotExistingDoc()
+        {
+            var getDoc = new GetDocument()
+            {
+                Type = "test-doc-type",
+                Name = "test"
+            };
+
+            var returnDoc = new Document()
+            {
+                Type = "test-doc-type",
+                Name = "test",
+                Body = null
+            };
+
+            var jbClient = new Moq.Mock<JsonballClient>();
+            jbClient.Setup(c => c.GetDocumentAsync(getDoc, CancellationToken.None)).ReturnsAsync(returnDoc);
+
+            var dm = new DocumentManager(jbClient.Object, true);
+            var doc = await dm.GetDocumentAsync<SimpleDocument>("test");
+
+            Assert.Null(doc);
+            Assert.Equal(new ListenOnChangeDocument[]
+            {
+                new ListenOnChangeDocument() {
+                    Type = "test-doc-type",
+                    Name = "test",
+                    Properties = new string[]{},
+                    NewDocument = true,
+                },
+            }, dm.BuildListenOnChange());
+        }
     }
 
     [DocumentType("test-doc-type")]
