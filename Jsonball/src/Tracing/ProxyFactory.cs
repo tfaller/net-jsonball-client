@@ -8,6 +8,12 @@ namespace TFaller.Jsonball.Client.Tracing
     /// </summary>
     public static class ProxyFactory
     {
+        private static readonly HashSet<Type> _atomicTypes = new HashSet<Type> {
+            typeof(string),
+            typeof(decimal),
+            typeof(DateTime),
+        };
+
         public static T CreateProxy<T>(T target, Tracer tracer) where T : ITraceable
         {
             return (T)CreateProxy(typeof(T), target, tracer);
@@ -16,7 +22,7 @@ namespace TFaller.Jsonball.Client.Tracing
         internal static object CreateProxy(Type type, object target, Tracer tracer)
         {
             // some types don't need a proxy, just return the plain value
-            if (target == null || type.IsPrimitive || type == typeof(string) || type.IsEnum)
+            if (target == null || type.IsPrimitive || type.IsEnum || _atomicTypes.Contains(type))
             {
                 return target;
             }

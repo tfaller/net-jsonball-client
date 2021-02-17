@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using TFaller.Jsonball.Client.Tracing;
@@ -11,18 +12,26 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
         public void TestSimpleProxy()
         {
             var t = new Tracer();
+            var now = DateTime.Now;
+
             var person = ProxyFactory.CreateProxy<IPerson>(new Person()
             {
                 Name = "test",
+                Birthday = now,
+                PocketMoney = 12.34M,
                 Parent = new Person(),
             }, t);
 
             var name = person.Name;
             var parentName = person.Parent.Name;
 
+            Assert.Equal(now, person.Birthday);
+            Assert.Equal(12.34M, person.PocketMoney);
             Assert.Equal(new Tracer()
             {
                 {"name", new Tracer()},
+                {"Birthday", new Tracer()},
+                {"PocketMoney", new Tracer()},
                 {"Parent", new Tracer()
                     {
                         {"name", new Tracer()}
@@ -142,6 +151,10 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
         public Gender Gender { get; set; }
 
         public int? BirthYear { get; set; }
+
+        public DateTime Birthday { get; set; }
+
+        public decimal PocketMoney { get; set; }
     }
 
     internal interface IPerson : ITraceable
@@ -156,6 +169,10 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
         Gender Gender { get; }
 
         int? BirthYear { get; }
+
+        DateTime Birthday { get; }
+
+        decimal PocketMoney { get; }
     }
 
     internal enum Gender
