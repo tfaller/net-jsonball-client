@@ -26,6 +26,27 @@ namespace TFaller.Jsonball.Tests.Client
             Assert.Equal("firstname", testDoc.Name);
             Assert.Equal(123, testDoc.Age);
         }
+
+        [Fact]
+        public void TestInvalidProperty()
+        {
+            var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<Document>(@"{""foo"":""bar""}"));
+            Assert.Equal("Invalid document property: foo", ex.Message);
+        }
+
+        [Fact]
+        public void TestNotObject()
+        {
+            var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<Document>(@"true"));
+            Assert.StartsWith("Expected an object, but got ", ex.Message);
+        }
+
+        [Fact]
+        public void TestUnknownDocType()
+        {
+            var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<Document>(@"{""type"":""hello"",""doc"":null}"));
+            Assert.Equal("Unknown document type: hello", ex.Message);
+        }
     }
 
     public class TestDocument

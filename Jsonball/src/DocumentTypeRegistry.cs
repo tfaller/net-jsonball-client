@@ -33,7 +33,7 @@ namespace TFaller.Jsonball.Client
                 // document is always an object
                 if (reader.TokenType != JsonTokenType.StartObject)
                 {
-                    throw new JsonException();
+                    throw new JsonException("Expected an object, but got " + reader.TokenType);
                 }
 
                 var doc = new Document();
@@ -73,12 +73,12 @@ namespace TFaller.Jsonball.Client
                             Type docType;
                             if (!DocumentTypeRegistry._docTypes.TryGetValue(doc.Type, out docType))
                             {
-                                throw new JsonException("Type does not match register document types");
+                                throw new JsonException("Unknown document type: " + doc.Type);
                             }
                             doc.Body = JsonSerializer.Deserialize(ref reader, docType, options);
                             break;
                         default:
-                            throw new JsonException();
+                            throw new JsonException("Invalid document property: " + propName);
                     }
                 }
 
