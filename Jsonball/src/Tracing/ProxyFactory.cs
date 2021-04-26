@@ -12,6 +12,7 @@ namespace TFaller.Jsonball.Client.Tracing
             typeof(string),
             typeof(decimal),
             typeof(DateTime),
+            typeof(Guid),
         };
 
         public static T CreateProxy<T>(T target, Tracer tracer) where T : ITraceable

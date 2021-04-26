@@ -138,6 +138,20 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
                 {"BirthYear", new Tracer()},
             }, t);
         }
+
+        [Fact]
+        public void TestGuid()
+        {
+            var g = Guid.NewGuid();
+            var t = new Tracer();
+            var proxy = ProxyFactory.CreateProxy<IGuidTest>(new GuidTest() { Id = g }, t);
+
+            Assert.Equal(g, proxy.Id);
+            Assert.Equal(new Tracer()
+            {
+                {"Id", new Tracer()},
+            }, t);
+        }
     }
 
     internal class Person : IPerson
@@ -173,6 +187,17 @@ namespace TFaller.Jsonball.Tests.Client.Tracing
         DateTime Birthday { get; }
 
         decimal PocketMoney { get; }
+    }
+
+    internal class GuidTest : IGuidTest
+    {
+        public Guid Id { get; set; }
+    }
+
+
+    internal interface IGuidTest : ITraceable
+    {
+        Guid Id { get; }
     }
 
     internal enum Gender
