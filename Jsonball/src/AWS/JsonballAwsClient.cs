@@ -12,7 +12,7 @@ namespace TFaller.Jsonball.Client.AWS
 {
     public class JsonballAwsClient : JsonballClient
     {
-        private AmazonLambdaClient _lambda;
+        private IAmazonLambda _lambda;
         private AmazonSQSClient _sqs;
         private JsonSerializerOptions _jsonDeserializeOptions;
         public string PostDocumentQueueUrl { get; set; }
@@ -20,7 +20,7 @@ namespace TFaller.Jsonball.Client.AWS
         public string ListenOnChangeFunction { get; set; }
         public string GetDocumentFunction { get; set; }
 
-        public JsonballAwsClient(AmazonLambdaClient lambda, AmazonSQSClient sqs, JsonSerializerOptions jsonDeserializeOptions = null)
+        public JsonballAwsClient(IAmazonLambda lambda, AmazonSQSClient sqs, JsonSerializerOptions jsonDeserializeOptions = null)
         {
             _lambda = lambda;
             _sqs = sqs;
